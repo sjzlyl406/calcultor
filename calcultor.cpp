@@ -1,4 +1,4 @@
-/*************************************************************************
+/************************************************************************
 	> File Name: calcultor.cpp
 	> Author: leon
 	> Mail: sjzlyl406@163.com 
@@ -8,9 +8,134 @@
 #include"calcultor.h"
 #include<iostream>
 
-/* PreTreatment
- * skip space
- * judge '(' & ')'*/
+#define isEXPONENT(iter) (isdigit(*(iter-1)) &&							\
+		(*iter == 'e' || *iter == 'E') &&								\
+		(*(iter+1) == '+' || *(iter+1) == '-' || isdigit(*(iter+1))))	
+#define isSYMBOL(c) ((c)=='+' || (c) == '-')
+#define isOPERATOR(c) (isSYMBOL(c) || (c)=='*' || (c) == '/')
+#define ERROR(p) throw std::runtime_error(""#p"")
+#define kk 100
+
+void isValid_(std::string &program)
+{
+	enum state_ {
+		blank,			//start
+		symbol,			//Number sign
+		number,			//number
+		comma,			//comma
+		dot,			//dot
+		lpar,			//Left parenthesis
+		rpar,			//right parenthesis
+		alphabet,		//function
+		exponent,		//exponent
+		opera		//operator
+	};
+	state_ state = blank;
+
+	char c;
+	for(int i = 0; i < program.size(); ++i) {
+		c = program[i];
+		switch(state) {
+			case blank : {
+				if(isdigit(c))
+					state = number;
+				else if(c == '(')
+					state = lpar;
+				else if(isalpha(c))
+					state = alphabet;
+				else if(isSYMBOL(c))
+					state = symbol;
+				else {
+					ERROR("Incorrect Expression!");
+				}
+				break;
+			}
+			case exponent : {
+				if(isSYMBOL(c))
+					state = symbol;
+				else if(isdigit(c))
+					state = number;
+				else {
+					ERROR("Incorrect Expression!");
+				}
+				break;
+			}
+			case symbol : 
+			case comma:
+			case lpar : {
+				if(isdigit(c))
+					state = number;
+				else if(isalpha(c))
+					state = alphabet;
+				else {
+					ERROR("Incorrect Expression!");
+				}
+				break;
+			}
+			case dot : {
+				if(isdigit(c))
+					state = number;
+				else {
+					ERROR("Incorrect Expression!");
+				}
+				break;
+			}
+			case number : {
+				if(isdigit(c))
+					state = number;
+				else if(isOPERATOR(c))
+					state = opera;
+				else if(isEXPONENT(program.begin()+i))
+					state = exponent;
+				else if(c == ',')
+					state = comma;
+				else if(c == '.')
+					state = dot;
+				else if(c == ')')
+					state = rpar;
+				else {
+					ERROR("Incorrect Expression!");
+				}
+				break;
+			}
+			case alphabet : {
+				if(isalpha(c))
+					state = alphabet;
+				else if(c == '(')
+					state = lpar;
+				else {
+					ERROR("Incorrect Expression!");
+				}
+				break;
+			}
+			case rpar : {
+				if(c == ')') 
+					state = rpar;
+				else if(isOPERATOR(c))
+					state = opera;
+				else {
+					ERROR("Incorrect Expression!");
+				}
+				break;
+			}
+			case opera : {
+				if(isSYMBOL(c))
+					state = symbol;
+				else if(isdigit(c))
+					state = number;
+				else if(isalpha(c))
+					state = alphabet;
+				else if(c == '(')
+					state = lpar;
+				else {
+					ERROR("Incorrect Expression!");
+				}
+				break;
+			}
+		}
+	}
+}
+
 void Calcultor::PreTreatment()
 {
 	size_t i = 0;
@@ -27,14 +152,15 @@ void Calcultor::PreTreatment()
 				(i<program_.size() && isdigit(program_[i+1])))
 			ParenStack.push('(');
 		if(program_[i] == ')')
-			if(ParenStack.empty())
+			if(ParenStack.empty()) 
 				throw std::runtime_error("Incorrect Expression!");
 			else
 				ParenStack.pop();
 	}
 	if(!ParenStack.empty())
 		throw std::runtime_error("Incorrect Expression!");
-	// judge "abs"/"sin"/"cos"...
+	// judge 'e' and 'E'...
+/*
 	for(i = 0; i < program_.size(); ++i) {
 		if(isalpha(program_[i])) {
 			if((program_[i] == 'e' || program_[i] == 'E') &&
@@ -44,8 +170,9 @@ void Calcultor::PreTreatment()
 			throw std::runtime_error("Incorrect Expression!");
 		}	
 	}
+*/
+	isValid_(program_);
 }
-/* return the result */
 const double Calcultor::Evaluate(std::string program )
 {
 	program_ = program;
@@ -59,12 +186,13 @@ const double Calcultor::Evaluate()
 	return Expression(program_);
 }
 
-/* analytic forms of the Expression */
 const double Calcultor::Expression(std::string program)
 {
-	if(FindChar(program, '(')) {
-		CalParen(program);			// ()
+	if(FindChar(program)){
+		CalFunc(program);
 	}
+	if(FindChar(program, '(') || FindChar(program, ')')) 
+		CalParen(program);			// ()
 	if(FindChar(program, '*') || FindChar(program, '/'))
 		CalMulAndDiv(program);		// * /
 	if(FindChar(program, '+') || FindChar(program, '-'))
@@ -76,8 +204,16 @@ const double Calcultor::Expression(std::string program)
 	s >> result;
 	return result;
 }
-
-/* if there is a c in program */
+bool Calcultor::FindChar(const std::string &program)
+{
+	std::string::const_iterator iter = program.begin();
+	while(iter != program.end() && (!isalpha(*iter) || isEXPONENT(iter)))
+		iter++;
+	if(iter != program.end())
+		return true;
+	else 
+		return false;
+}
 bool Calcultor::FindChar(const std::string &program, const char c)
 {
 	if(find(program.begin(), program.end(), c) != program.end())
@@ -85,8 +221,49 @@ bool Calcultor::FindChar(const std::string &program, const char c)
 	else
 		return false;
 }
+void Calcultor::CalFunc(std::string &program)
+{
+	size_t i = 0;
+	size_t strstart, strstop, exprstart, exprstop, exprmid = 0;
+	std::stack<char> parstack;
+	for(strstart = 0; strstart < program.size(); ++strstart) {
+		if(isalpha(program[strstart]) && !isEXPONENT(program.begin()+strstart)) {
+			break;
+		}
+	}
+	strstop = strstart;
+	while(program[strstop+1] != '(') strstop++;
+	parstack.push('(');
+	size_t p = strstop+2;
+	exprstart = p;
+	while(!parstack.empty()) {
+		if(program[p] == '(')
+			parstack.push('(');
+		if(program[p] == ')')
+			parstack.pop();
+		if(program[p] == ',')
+			exprmid == p;
+		p++;
+	}
+	exprstop = p-2;
+	if(exprmid != 0) {
+		double num2 = Expression(program.substr(exprmid+1, exprstop-exprmid));
+		WriteDouble(program, exprmid+1, exprstop,num2);
+		double num1 = Expression(program.substr(exprstart, exprmid-exprstart));
+		WriteDouble(program,exprstart, exprmid-1, num1);
+	}
+	else {
+		double num = Expression(program.substr(exprstart, exprstop-exprstart+1));
+		WriteDouble(program, exprstart, exprstop, num);
+	}
+	strstop = exprstart;
+	while(program[strstop] != ')') strstop++;
+		std::cout<<program<<":"<<strstart<<":"<<strstop << std::endl;
+	Function func(program.substr(strstart, strstop-strstart+1));
+	double num = func.Evaluate();
+	WriteDouble(program, strstart, strstop, num);
 
-/* recursively compute the expression in parenthesis*/
+}
 void Calcultor::CalParen(std::string &program)
 {
 	while(FindChar(program, ')')) {
@@ -117,7 +294,6 @@ void Calcultor::CalParen(std::string &program)
 		WriteDouble(program, left, right, result);
 	}
 }
-/* * & / */
 void Calcultor::CalMulAndDiv(std::string &program)
 {
 	while(FindChar(program,'*') || FindChar(program,'/'))
@@ -143,7 +319,6 @@ void Calcultor::CalMulAndDiv(std::string &program)
 	}
 }
 
-/* + & - */
 void Calcultor::CalPluAndMin(std::string &program)
 {
 	while(FindChar(program.substr(1),'+') || FindChar(program.substr(1),'-'))
@@ -169,12 +344,11 @@ void Calcultor::CalPluAndMin(std::string &program)
 		WriteDouble(program, left, right, result);
 	}
 }
-
 size_t Calcultor::ExtractNum(const std::string &program, size_t i, double &result, bool right_)
 {
 	result = 0.0;
 	size_t length = program.size();
-	if(right_) {  // 右边查找
+	if(right_) {  // right search
 		size_t right = i+1;
 		if(program[right] == '+' || program[right]=='-')
 			right++;
@@ -196,7 +370,7 @@ size_t Calcultor::ExtractNum(const std::string &program, size_t i, double &resul
 		
 		return right;
 	}
-	else {  //左边查找 
+	else {  //left search
 		size_t left = i-1;
 		while(left >= 0 && isdigit(program[left]))
 			left--;
@@ -235,22 +409,4 @@ void Calcultor::WriteDouble(std::string &program, size_t left, size_t right, dou
 	program = os.str();
 }
 
-int main(void)
-{
-	try{
-		std::string str;
-		getline(std::cin,str);
-
-		Calcultor c(str);
-		double result;
-		result = c.Evaluate(str);
-
-		std::cout<< c.program_ << "="<< result<< std::endl;
-	}
-	catch(const std::exception &e)
-	{
-		std::cout<< e.what() <<std::endl;
-	}
-	return 0;
-}
 
