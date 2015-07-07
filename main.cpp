@@ -19,7 +19,7 @@ int main(void)
 {
 	while(true) {
 		try{
-			std::cout<<"input an expression:";
+//			std::cout<<"input an expression:";
 			std::string str;
 			getline(std::cin,str);
 
@@ -36,7 +36,7 @@ int main(void)
 		catch(const std::exception &e)
 		{
 			std::cout<< e.what() <<std::endl;
-			std::cout<<"\ninput again? Enter y or n:";
+			std::cout<<"input again? Enter y or n:";
 			char c;
 			std::cin >> c;
 			if(std::cin && (c == 'n' || c == 'N'))

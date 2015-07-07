@@ -8,9 +8,9 @@
 #include"calcultor.h"
 #include<iostream>
 
-#define isEXPONENT(iter) (isdigit(*(iter-1)) &&							\
-		(*iter == 'e' || *iter == 'E') &&								\
-		(*(iter+1) == '+' || *(iter+1) == '-' || isdigit(*(iter+1))))	
+#define isEXPONENT(iter) (isdigit(*((iter)-1)) &&							\
+		(*(iter) == 'e' || *(iter) == 'E') &&								\
+		(*((iter)+1) == '+' || *((iter)+1) == '-' || isdigit(*((iter)+1))))	
 #define isSYMBOL(c) ((c)=='+' || (c) == '-')
 #define isOPERATOR(c) (isSYMBOL(c) || (c)=='*' || (c) == '/')
 #define ERROR(p) throw std::runtime_error(""#p"")
