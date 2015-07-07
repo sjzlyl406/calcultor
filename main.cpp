@@ -16,19 +16,23 @@ int main(void)
 			std::string str;
 			getline(std::cin,str);
 
+			if(str == "exit")
+				break;
+
 			Calcultor c;
 			double result;
 			result = c.Evaluate(str);
 
-			std::cout<< str << " = "<< result<< std::endl;
+			if(!str.empty())
+				std::cout<< str << " = "<< result<< std::endl;
 		}
 		catch(const std::exception &e)
 		{
 			std::cout<< e.what() <<std::endl;
-			std::cout<<"input again?(y/n):";
+			std::cout<<"\ninput again? Enter y or n:";
 			char c;
 			std::cin >> c;
-			if(c == 'n' || c == 'N')
+			if(std::cin && (c == 'n' || c == 'N'))
 				break;
 		}
 	}

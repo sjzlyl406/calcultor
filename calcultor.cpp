@@ -14,7 +14,6 @@
 #define isSYMBOL(c) ((c)=='+' || (c) == '-')
 #define isOPERATOR(c) (isSYMBOL(c) || (c)=='*' || (c) == '/')
 #define ERROR(p) throw std::runtime_error(""#p"")
-#define kk 100
 
 void isValid_(std::string &program)
 {
@@ -28,7 +27,7 @@ void isValid_(std::string &program)
 		rpar,			//right parenthesis
 		alphabet,		//function
 		exponent,		//exponent
-		opera		//operator
+		opera			//operator
 	};
 	state_ state = blank;
 
@@ -46,7 +45,7 @@ void isValid_(std::string &program)
 				else if(isSYMBOL(c))
 					state = symbol;
 				else {
-					ERROR("Incorrect Expression!");
+					ERROR(Incorrect Expression!);
 				}
 				break;
 			}
@@ -56,7 +55,7 @@ void isValid_(std::string &program)
 				else if(isdigit(c))
 					state = number;
 				else {
-					ERROR("Incorrect Expression!");
+					ERROR(Incorrect Expression!);
 				}
 				break;
 			}
@@ -68,7 +67,7 @@ void isValid_(std::string &program)
 				else if(isalpha(c))
 					state = alphabet;
 				else {
-					ERROR("Incorrect Expression!");
+					ERROR(Incorrect Expression!);
 				}
 				break;
 			}
@@ -76,7 +75,7 @@ void isValid_(std::string &program)
 				if(isdigit(c))
 					state = number;
 				else {
-					ERROR("Incorrect Expression!");
+					ERROR(Incorrect Expression!);
 				}
 				break;
 			}
@@ -94,7 +93,7 @@ void isValid_(std::string &program)
 				else if(c == ')')
 					state = rpar;
 				else {
-					ERROR("Incorrect Expression!");
+					ERROR(Incorrect Expression!);
 				}
 				break;
 			}
@@ -104,7 +103,7 @@ void isValid_(std::string &program)
 				else if(c == '(')
 					state = lpar;
 				else {
-					ERROR("Incorrect Expression!");
+					ERROR(Incorrect Expression!);
 				}
 				break;
 			}
@@ -114,7 +113,7 @@ void isValid_(std::string &program)
 				else if(isOPERATOR(c))
 					state = opera;
 				else {
-					ERROR("Incorrect Expression!");
+					ERROR(Incorrect Expression!);
 				}
 				break;
 			}
@@ -128,12 +127,17 @@ void isValid_(std::string &program)
 				else if(c == '(')
 					state = lpar;
 				else {
-					ERROR("Incorrect Expression!");
+					ERROR(Incorrect Expression!);
 				}
 				break;
 			}
 		}
 	}
+	if(state == symbol || state == comma || 
+		state == dot || state == alphabet || 
+		state == exponent || state == opera)
+		ERROR(Incorrect Expression!);
+		
 }
 
 void Calcultor::PreTreatment()
@@ -147,9 +151,7 @@ void Calcultor::PreTreatment()
 			program_.erase(i--, 1);
 
 		//judge '(' and ')'
-		if((i>0 && !isdigit(program_[i-1]) || i == 0) && 
-				program_[i] == '(' && 
-				(i<program_.size() && isdigit(program_[i+1])))
+		if(	program_[i] == '(' )
 			ParenStack.push('(');
 		if(program_[i] == ')')
 			if(ParenStack.empty()) 
@@ -258,7 +260,6 @@ void Calcultor::CalFunc(std::string &program)
 	}
 	strstop = exprstart;
 	while(program[strstop] != ')') strstop++;
-		std::cout<<program<<":"<<strstart<<":"<<strstop << std::endl;
 	Function func(program.substr(strstart, strstop-strstart+1));
 	double num = func.Evaluate();
 	WriteDouble(program, strstart, strstop, num);
