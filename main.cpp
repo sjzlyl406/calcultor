@@ -4,6 +4,13 @@
 	> Mail: sjzlyl406@163.com 
 	> Created Time: 2015年06月30日 星期二 09时49分14秒
  ************************************************************************/
+/*********************************************************************
+ * (C) Copyright Leon 2015. Permission to copy, use, modify, sell and
+ * distribute this software is granted provided this copyright notice appears
+ * in all copies. This software is provided "as is" without express or implied
+ * warranty, and with no claim as to its suitability for any purpose.
+ *
+ * ****************************************************************/
 
 #include<iostream>
 #include"calcultor.h"

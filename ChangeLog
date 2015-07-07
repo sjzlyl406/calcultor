@@ -1,0 +1,30 @@
+Calcultor - An easy calcultor
+
+Author: Leon
+GitHub: https://github.com/sjzlyl406
+
+---------------------------------------------------------------
+
+Modified 7 July 2015 by Leon
+
+1.Modify the pretreatment to Determine the legality of expression
+2.Removed "using namespace std;" and put "std::" in front of std namespace 
+names where appropriate
+3.Modify the Expression function to increasing function computing
+4.Change the form of Error return
+5.Increase isValid_ function
+
+Modified 5 July 2015 by Leon
+
+1.Increase function.h and function.cpp file
+2.Fixed some bugs such as where 2.3 would not parse correctly
+3.Used Automake/Autoconf to manage the project.
+
+Modified 2 July 2015 by leon
+
+1.Fixed problem where 2e-3 would not parse correctely
+2.Changed Evaluate function to take its argument by reference
+
+Created 28 June 2015 by leon
+
+1.Created calcultor.cpp and calcultor.h file

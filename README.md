@@ -14,3 +14,14 @@ http://sjzlyl406.github.io
 distribute this software is granted provided this copyright notice appears
 in all copies. This software is provided "as is" without express or implied
 warranty, and with no claim as to its suitability for any purpose.""
+
+Compile & run :
+```
+./configure --prefix=/address
+make
+./calcultor
+```
+
+Example usage:
+
+	
